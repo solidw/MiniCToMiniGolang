@@ -8,11 +8,11 @@ import generated.*;
 
 public class Translator {
 	enum OPTIONS {
-		PRETTYPRINT, BYTECODEGEN, UCODEGEN, ERROR
+		PRETTYPRINT, BYTECODEGEN, MINIGOGEN, UCODEGEN, ERROR
 	}
 	private static OPTIONS getOption(String[] args){
 		if (args.length < 1)
-			return OPTIONS.BYTECODEGEN;
+			return OPTIONS.MINIGOGEN;
 		
 		if (args[0].startsWith("-p") 
 				|| args[0].startsWith("-P"))
@@ -21,6 +21,10 @@ public class Translator {
 		if (args[0].startsWith("-b") 
 				|| args[0].startsWith("-B"))
 			return OPTIONS.BYTECODEGEN;
+		
+		if (args[0].startsWith("-g") 
+				|| args[0].startsWith("-G"))
+			return OPTIONS.MINIGOGEN;
 		
 		if (args[0].startsWith("-u") 
 				|| args[0].startsWith("-U"))
@@ -44,6 +48,9 @@ public class Translator {
 				break;
 			case BYTECODEGEN:
 				walker.walk(new BytecodeGenListener(), tree );
+				break;
+			case MINIGOGEN:
+				walker.walk(new MiniGoGenListener(), tree);
 				break;
 			case UCODEGEN:
 //				walker.walk(new UCodeGenListener(), tree );

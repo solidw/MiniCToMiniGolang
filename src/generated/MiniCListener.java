@@ -110,6 +110,16 @@ public interface MiniCListener extends ParseTreeListener {
 	 */
 	void exitWhile_stmt(MiniCParser.While_stmtContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MiniCParser#for_stmt}.
+	 * @param ctx the parse tree
+	 */
+	void enterFor_stmt(MiniCParser.For_stmtContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MiniCParser#for_stmt}.
+	 * @param ctx the parse tree
+	 */
+	void exitFor_stmt(MiniCParser.For_stmtContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MiniCParser#compound_stmt}.
 	 * @param ctx the parse tree
 	 */
