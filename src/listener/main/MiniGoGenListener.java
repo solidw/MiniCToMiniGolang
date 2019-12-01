@@ -158,17 +158,15 @@ public class MiniGoGenListener extends MiniCBaseListener implements ParseTreeLis
 
 		if (ctx.getChildCount() == 5) {
 			stmt += "for ";
-			stmt += "; "; // local_decl
 			ExprContext expr = ctx.expr();
 			if (expr != null)
-				stmt += newTexts.get(ctx.expr()) + "; ";
+				stmt += newTexts.get(ctx.expr()) + " ";
 
 			if (ctx.stmt() != null)
 				stmt += newTexts.get(ctx.stmt());
 
 		}
 		newTexts.put(ctx, stmt);
-		// <(1) Fill here!>
 	}
 
 	// for_stmt : FOR '(' (local_decl|expr)? ';' expr? ';' expr? ')' stmt;
@@ -219,7 +217,7 @@ public class MiniGoGenListener extends MiniCBaseListener implements ParseTreeLis
 	public void exitFun_decl(MiniCParser.Fun_declContext ctx) {
 		String fun_decl = "";
 		String fname = ctx.IDENT().getText();
-		fun_decl += funcHeader(ctx, fname);
+		fun_decl += funcHeader(ctx, fname) + " ";
 		if (ctx.getChildCount() == 6) {
 			if (ctx.compound_stmt() != null) {
 				fun_decl += newTexts.get(ctx.compound_stmt());
@@ -236,13 +234,33 @@ public class MiniGoGenListener extends MiniCBaseListener implements ParseTreeLis
 
 	@Override
 	public void exitVar_decl(MiniCParser.Var_declContext ctx) {
-		String varName = ctx.IDENT().getText();
 		String varDecl = "";
+		String ident = ctx.IDENT().getText();
+		String type_spec = ctx.type_spec().getText();
+		if (ctx.getChildCount() == 3) {
+			varDecl += "var ";
+			varDecl += ident + " ";
+			varDecl += type_spec + " ";
+			symbolTable.putGlobalVar(ident, symbolTable.makeType(type_spec));
+		} else if (isDeclWithInit(ctx)) {
+			String literal = ctx.LITERAL().getText();
 
-		if (isDeclWithInit(ctx)) {
-			varDecl += "putfield " + varName + "\n";
-			// v. initialization => Later! skip now..:
+			varDecl += ident + " ";
+			varDecl += ":= ";
+			varDecl += literal + " ";
+
+			int initVar = Integer.parseInt(literal);
+			symbolTable.putGlobalVarWithInitVal(ident, symbolTable.makeType(type_spec), initVar);
+		} else if (isArrayDecl(ctx)) {
+			String literal = ctx.LITERAL().getText();
+
+			varDecl += ident + " ";
+			varDecl += ":= ";
+			varDecl += "make([]" + type_spec + ", " + literal + ")";
+			symbolTable.putGlobalVar(ident, Type.INTARRAY);
 		}
+		varDecl += "\n";
+
 		newTexts.put(ctx, varDecl);
 	}
 
@@ -289,17 +307,28 @@ public class MiniGoGenListener extends MiniCBaseListener implements ParseTreeLis
 		stmt += "{" + "\n";
 		if (ctx.getChildCount() > 1) {
 			for (int i = 0; i < ctx.local_decl().size(); i++) {
-				stmt += newTexts.get(ctx.local_decl(i));
+				stmt += tab_count(tab) + newTexts.get(ctx.local_decl(i));
+//				stmt += newTexts.get(ctx.local_decl(i));
 			}
 			for (int i = 0; i < ctx.stmt().size(); i++) {
-				stmt += newTexts.get(ctx.stmt(i));
+				stmt += tab_count(tab) + newTexts.get(ctx.stmt(i));
+//				stmt += newTexts.get(ctx.stmt(i));
 			}
 		}
-		stmt += "}" + "\n";
+		stmt += tab_count(tab-1) + "}" + "\n";
+		tab--;
 		newTexts.put(ctx, stmt);
 		// <(3) Fill here>
 	}
-
+	
+	private String tab_count(int tab) {
+		String tab_str = "";
+		for (int i=0; i<tab; i++) {
+			tab_str += "\t";
+		}
+		return tab_str;
+	}
+	
 	// if_stmt : IF '(' expr ')' stmt | IF '(' expr ')' stmt ELSE stmt;
 	@Override
 	public void exitIf_stmt(MiniCParser.If_stmtContext ctx) {
@@ -312,10 +341,12 @@ public class MiniGoGenListener extends MiniCBaseListener implements ParseTreeLis
 		if (noElse(ctx)) {
 			stmt += thenStmt;
 		} else {
+			thenStmt = thenStmt.substring(0, thenStmt.length() - 1);
 			String elseStmt = newTexts.get(ctx.stmt(1));
-			thenStmt = thenStmt.replace("\n", "");
 			stmt += thenStmt;
+			stmt += " ";
 			stmt += ctx.ELSE().getText();
+			stmt += " ";
 			stmt += elseStmt;
 		}
 
@@ -400,7 +431,9 @@ public class MiniGoGenListener extends MiniCBaseListener implements ParseTreeLis
 
 	private String handleBinExpr(MiniCParser.ExprContext ctx, String expr) {
 		expr += newTexts.get(ctx.expr(0));
+		expr += " ";
 		expr += ctx.getChild(1).getText();
+		expr += " ";
 		expr += newTexts.get(ctx.expr(1));
 		return expr;
 	}
@@ -410,8 +443,10 @@ public class MiniGoGenListener extends MiniCBaseListener implements ParseTreeLis
 		if (fname.equals("_print")) { // System.out.println
 			expr = "println(" + newTexts.get(ctx.args()) + ")";
 		} else {
-			expr = newTexts.get(ctx.args()) + "invokestatic " + getCurrentClassName() + "/"
-					+ symbolTable.getFunSpecStr(fname) + "\n";
+			expr = ctx.IDENT().getText();
+			expr += "(";
+			expr += newTexts.get(ctx.args());
+			expr += ")";
 		}
 		return expr;
 
@@ -426,7 +461,9 @@ public class MiniGoGenListener extends MiniCBaseListener implements ParseTreeLis
 
 		for (int i = 0; i < ctx.expr().size(); i++) {
 			argsStr += newTexts.get(ctx.expr(i));
+			argsStr += ", ";
 		}
+		argsStr = argsStr.substring(0, argsStr.length()-2);
 		newTexts.put(ctx, argsStr);
 	}
 
