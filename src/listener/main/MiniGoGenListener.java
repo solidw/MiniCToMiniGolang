@@ -306,13 +306,9 @@ public class MiniGoGenListener extends MiniCBaseListener implements ParseTreeLis
 		String stmt = "";
 		stmt += "{" + "\n";
 		if (ctx.getChildCount() > 1) {
-			for (int i = 0; i < ctx.local_decl().size(); i++) {
-				stmt += tab_count(tab) + newTexts.get(ctx.local_decl(i));
+			for (int i = 1; i < ctx.getChildCount()-1; i++) {
+				stmt += tab_count(tab) + newTexts.get(ctx.getChild(i));
 //				stmt += newTexts.get(ctx.local_decl(i));
-			}
-			for (int i = 0; i < ctx.stmt().size(); i++) {
-				stmt += tab_count(tab) + newTexts.get(ctx.stmt(i));
-//				stmt += newTexts.get(ctx.stmt(i));
 			}
 		}
 		stmt += tab_count(tab-1) + "}" + "\n";
