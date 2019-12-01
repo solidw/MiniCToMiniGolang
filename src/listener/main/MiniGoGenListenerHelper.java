@@ -1,7 +1,5 @@
 package listener.main;
 
-import java.util.Hashtable;
-
 import generated.MiniCParser;
 import generated.MiniCParser.ExprContext;
 import generated.MiniCParser.Fun_declContext;
@@ -11,8 +9,6 @@ import generated.MiniCParser.ParamContext;
 import generated.MiniCParser.ParamsContext;
 import generated.MiniCParser.Type_specContext;
 import generated.MiniCParser.Var_declContext;
-import listener.main.SymbolTable;
-import listener.main.SymbolTable.VarInfo;
 
 public class MiniGoGenListenerHelper {
 
@@ -57,9 +53,7 @@ public class MiniGoGenListenerHelper {
 	}
 
 	static boolean isVoidF(Fun_declContext ctx) {
-//		mark
 		return "void".equals(ctx.type_spec().getText());
-		// <Fill in>
 	}
 
 	static boolean isIntReturn(MiniCParser.Return_stmtContext ctx) {
@@ -70,24 +64,13 @@ public class MiniGoGenListenerHelper {
 		return ctx.getChildCount() == 2;
 	}
 
-	// <information extraction>
-	static String getStackSize(Fun_declContext ctx) {
-		return "32";
-	}
-
-	static String getLocalVarSize(Fun_declContext ctx) {
-		return "32";
-	}
-
 	static String getTypeText(Type_specContext typespec) {
 		return typespec.getText();
-		// <Fill in>
 	}
 
 	// params
 	static String getParamName(ParamContext param) {
 		return param.IDENT().getText();
-		// <Fill in>
 	}
 
 	/*
@@ -104,7 +87,8 @@ public class MiniGoGenListenerHelper {
 			typeText += params.param(i).type_spec().getText();
 			typeText += ", ";
 		}
-		typeText = typeText.substring(0, typeText.length() -2);
+		if(typeText.length() > 2)
+			typeText = typeText.substring(0, typeText.length() -2);
 		return typeText;
 	}
 
@@ -127,7 +111,7 @@ public class MiniGoGenListenerHelper {
 	static String getFunProlog() {
 		return "package main" + "\n" + "\n";
 	}
-
+	
 	static String getCurrentClassName() {
 		return "no use";
 	}

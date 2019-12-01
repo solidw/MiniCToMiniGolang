@@ -12,6 +12,7 @@ var_decl	: type_spec IDENT ';'
 			| type_spec IDENT '[' LITERAL ']' ';';
 type_spec	: VOID
 			| INT;
+			
 fun_decl	: type_spec IDENT '(' params ')' compound_stmt ;
 params		: param (',' param)*
 			| VOID
