@@ -313,6 +313,7 @@ public class MiniGoGenListener extends MiniCBaseListener implements ParseTreeLis
 			stmt += thenStmt;
 		} else {
 			String elseStmt = newTexts.get(ctx.stmt(1));
+			thenStmt = thenStmt.replace("\n", "");
 			stmt += thenStmt;
 			stmt += ctx.ELSE().getText();
 			stmt += elseStmt;
@@ -385,14 +386,14 @@ public class MiniGoGenListener extends MiniCBaseListener implements ParseTreeLis
 		newTexts.put(ctx, expr);
 	}
 
-	// ex) ++a
+	// ex) ++a, but ++a can't use in golang
 	private String handleUnaryExpr(MiniCParser.ExprContext ctx, String expr) {
 		if (ctx.getChild(1) == ctx.expr(0)) {
 			expr += ctx.getChild(0).getText();
 			expr += newTexts.get(ctx.expr(0));
 		} else if (ctx.getChild(0) == ctx.expr(0)) {
 			expr += newTexts.get(ctx.expr(0));
-			expr += ctx.getChild(0).getText();
+			expr += ctx.getChild(1).getText();
 		}
 		return expr;
 	}
