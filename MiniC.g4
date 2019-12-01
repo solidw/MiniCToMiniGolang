@@ -27,11 +27,15 @@ stmt		: expr_stmt
 			
 expr_stmt	: expr ';';
 while_stmt	: WHILE '(' expr ')' stmt;
-for_stmt	: FOR '(' (local_decl|expr)? ';' expr? ';' expr? ')' stmt;
+for_stmt	: FOR '(' (for_decl|expr)? ';' expr? ';' expr? ')' stmt;
 
 compound_stmt: '{' (local_decl|stmt)* '}';
+for_decl	: type_spec IDENT
+			| type_spec IDENT '=' LITERAL
+			| type_spec IDENT '[' LITERAL ']';
+			
 local_decl	: type_spec IDENT ';'
-			| type_spec IDENT '=' LITERAL ';'	
+			| type_spec IDENT '=' LITERAL ';'
 			| type_spec IDENT '[' LITERAL ']' ';';
 if_stmt		: IF '(' expr ')' stmt
 			| IF '(' expr ')' stmt ELSE stmt;
