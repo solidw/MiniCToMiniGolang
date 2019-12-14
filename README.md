@@ -16,9 +16,11 @@ CNU CSE 3-2 Compiler introduction final assignment
 - ####  MiniC
 
   - Data type : void, int, int[LITERAL] only
-  - Statement : for( additional ), while, if, else ( no else if ), return, binaryOP( AND, OR, +, -... But No Bit OP ) ( additional Operator IDENT++ ) 
+  - Statement : for, while, if, else ( no else if ), return, binaryOP( AND, OR, +, -... But No Bit OP )
   - Functions ( builtin Function _print() : puts() in C )
   - The other keyword in C are dosen't exist in MiniC ( struct, typedef ... )
+
+  
 
 - #### MiniGo
 
@@ -28,10 +30,10 @@ CNU CSE 3-2 Compiler introduction final assignment
   - The other keyword in Golang are dosen't exist in MiniGolang ( const, goto, switch... )
   - NO ++IDENT in Basic Golang
 
-- Smart Indenting
+- Smart Indenting when transpiling MiniC to MiniGolang
 
 - Additional Implemantaion : for, IDENT ++ in MiniC
 
-- Default package 'main'
+- Default package 'main' in MiniGolang
 
 - Apply default syntax which is prefer in Golang ( a+b => a + b, if  {} \n else => if {} else )
